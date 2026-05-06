@@ -1,0 +1,8 @@
+[build]
+  functions = "netlify/functions"
+  publish = "."
+
+[[redirects]]
+  from = "/api/ocr"
+  to = "/.netlify/functions/ocr"
+  status = 200

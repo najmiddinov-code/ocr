@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OCR Tizimi — Matn Tanish</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0d0f;
+    --surface: #17171a;
+    --surface2: #1e1e22;
+    --border: #2a2a30;
+    --border2: #3a3a42;
+    --accent: #7c6af7;
+    --accent2: #5eddbc;
+    --text: #f0eff6;
+    --text2: #9896a8;
+    --text3: #5f5e6e;
+    --danger: #f07070;
+    --success: #5eddbc;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* Nav */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem 2.5rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.15rem;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .nav-logo span {
+    display: inline-block;
+    width: 28px; height: 28px;
+    background: var(--accent);
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .nav-logo span svg { width: 16px; height: 16px; stroke: #fff; fill: none; stroke-width: 2; }
+  .nav-badge {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 99px;
+    border: 1px solid var(--border2);
+    color: var(--text2);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.04em;
+  }
+
+  /* Hero */
+  .hero {
+    text-align: center;
+    padding: 5rem 2rem 3rem;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .hero-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 4px 14px;
+    border-radius: 99px;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--text) 60%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero p {
+    font-size: 1rem;
+    color: var(--text2);
+    max-width: 440px;
+    margin: 0 auto 2.5rem;
+  }
+
+  /* Stats row */
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 3.5rem;
+    flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .stat-label { font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+  /* Main card */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  /* Upload area */
+  .upload-section { padding: 2rem; }
+  .drop-zone {
+    border: 1.5px dashed var(--border2);
+    border-radius: var(--radius);
+    padding: 3.5rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+    background: var(--surface2);
+  }
+  .drop-zone:hover, .drop-zone.over {
+    border-color: var(--accent);
+    background: rgba(124,106,247,0.04);
+  }
+  .drop-icon {
+    width: 52px; height: 52px;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1rem;
+  }
+  .drop-icon svg { width: 24px; height: 24px; stroke: var(--accent); fill: none; stroke-width: 1.5; }
+  .drop-title { font-size: 0.95rem; font-weight: 500; margin-bottom: 4px; }
+  .drop-sub { font-size: 12px; color: var(--text3); }
+  .drop-btn {
+    display: inline-block;
+    margin-top: 1.2rem;
+    padding: 8px 20px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border2);
+    font-size: 13px;
+    color: var(--text2);
+    cursor: pointer;
+    background: var(--surface);
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .drop-btn:hover { border-color: var(--accent); color: var(--accent); }
+  #fileInput { display: none; }
+
+  /* Controls */
+  .controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 12px;
+    padding: 0 2rem 1.5rem;
+    align-items: end;
+  }
+  @media (max-width: 600px) {
+    .controls { grid-template-columns: 1fr; }
+  }
+  label.ctrl-label {
+    display: block;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text3);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  select, .format-select {
+    width: 100%;
+    padding: 9px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235f5e6e' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
+  select:focus { border-color: var(--accent); }
+
+  .run-btn {
+    padding: 9px 24px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 8px;
+    white-space: nowrap;
+    transition: opacity 0.15s, transform 0.1s;
+    height: 38px;
+  }
+  .run-btn:hover { opacity: 0.88; }
+  .run-btn:active { transform: scale(0.97); }
+  .run-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .run-btn svg { width: 16px; height: 16px; stroke: #fff; fill: none; stroke-width: 2; }
+
+  /* Divider */
+  .divider { height: 1px; background: var(--border); margin: 0 2rem; }
+
+  /* Preview + Result panel */
+  .panel {
+    display: none;
+    padding: 1.5rem 2rem;
+  }
+  .panel-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 620px) {
+    .panel-row { grid-template-columns: 1fr; }
+  }
+  .panel-title {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text3);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .img-preview {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    min-height: 200px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .img-preview img {
+    max-width: 100%;
+    max-height: 260px;
+    object-fit: contain;
+    display: block;
+  }
+  .pdf-icon-placeholder {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    color: var(--text3); font-size: 12px;
+  }
+  .pdf-icon-placeholder svg { width: 40px; height: 40px; stroke: var(--text3); fill: none; stroke-width: 1.2; }
+
+  .result-area {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    min-height: 200px;
+    position: relative;
+    overflow: hidden;
+  }
+  #resultText {
+    width: 100%;
+    height: 100%;
+    min-height: 200px;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    padding: 14px;
+    resize: vertical;
+    outline: none;
+  }
+  .result-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text3);
+    font-size: 13px;
+    pointer-events: none;
+  }
+
+  /* Progress */
+  .progress-wrap {
+    height: 2px;
+    background: var(--border);
+    border-radius: 1px;
+    overflow: hidden;
+    margin: 0;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    border-radius: 1px;
+    transition: width 0.3s ease;
+  }
+
+  /* Error */
+  .error-bar {
+    margin: 0 2rem 1rem;
+    padding: 10px 14px;
+    background: rgba(240,112,112,0.08);
+    border: 1px solid rgba(240,112,112,0.25);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    color: var(--danger);
+    display: none;
+    align-items: center;
+    gap: 8px;
+  }
+  .error-bar svg { width: 15px; height: 15px; stroke: var(--danger); fill: none; stroke-width: 2; flex-shrink: 0; }
+
+  /* Action bar */
+  .action-bar {
+    display: none;
+    padding: 1rem 2rem;
+    border-top: 1px solid var(--border);
+    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  .action-bar .meta { font-size: 12px; color: var(--text3); font-family: 'DM Mono', monospace; }
+  .action-btns { display: flex; gap: 8px; }
+  .action-btns button {
+    padding: 7px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border2);
+    background: transparent;
+    color: var(--text2);
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .action-btns button:hover { border-color: var(--accent2); color: var(--accent2); }
+  .action-btns button svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; }
+  .download-btn {
+    padding: 7px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--accent2) !important;
+    color: var(--accent2) !important;
+  }
+
+  /* Spinner */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spin { animation: spin 0.8s linear infinite; display: inline-block; }
+
+  /* Features */
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 2.5rem;
+  }
+  .feature {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.2rem 1.4rem;
+  }
+  .feature-icon {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 10px;
+  }
+  .feature-icon svg { width: 17px; height: 17px; stroke: var(--accent); fill: none; stroke-width: 1.8; }
+  .feature h3 { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+  .feature p { font-size: 12px; color: var(--text3); line-height: 1.5; }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 2.5rem 2rem;
+    font-size: 12px;
+    color: var(--text3);
+    border-top: 1px solid var(--border);
+    margin-top: 3rem;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* Main layout */
+  main { max-width: 820px; margin: 0 auto; padding: 0 1.5rem 2rem; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <span>
+      <svg viewBox="0 0 24 24"><path d="M9 9l6-6M15 9l-6-6M3 12h18M3 12l5 5M3 12l5-5M21 12l-5 5M21 12l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </span>
+    OCR Tizimi
+  </div>
+  <span class="nav-badge">v1.0 · Claude AI</span>
+</nav>
+
+<main>
+  <div class="hero">
+    <div class="hero-tag">Sun'iy intellekt asosida</div>
+    <h1>Rasmdan matn — bir zumda</h1>
+    <p>Istalgan rasm yoki PDF faylingizni yuklang. AI har qanday tildagi matnni aniq tanib beradi.</p>
+
+    <div class="stats">
+      <div class="stat"><div class="stat-val">20+</div><div class="stat-label">Til qo'llab-quvvatlanadi</div></div>
+      <div class="stat"><div class="stat-val">PDF</div><div class="stat-label">va rasm formatlari</div></div>
+      <div class="stat"><div class="stat-val">99%</div><div class="stat-label">Aniqlik darajasi</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+
+    <!-- Upload -->
+    <div class="upload-section">
+      <div class="drop-zone" id="dropZone">
+        <div class="drop-icon">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="drop-title">Faylni shu yerga tashlang</div>
+        <div class="drop-sub">PNG, JPG, WEBP, PDF &mdash; maksimal 10 MB</div>
+        <div class="drop-btn" id="browsBtn">Fayl tanlash</div>
+        <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp,application/pdf">
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <div>
+        <label class="ctrl-label">Matn tili</label>
+        <select id="langSel">
+          <option value="auto">Avtomatik aniqlash</option>
+          <option value="uz">O'zbek tili</option>
+          <option value="ru">Rus tili</option>
+          <option value="en">Ingliz tili</option>
+          <option value="ar">Arab tili</option>
+          <option value="zh">Xitoy tili</option>
+          <option value="ko">Koreys tili</option>
+          <option value="de">Nemis tili</option>
+          <option value="fr">Fransuz tili</option>
+          <option value="tr">Turk tili</option>
+          <option value="ja">Yapon tili</option>
+        </select>
+      </div>
+      <div>
+        <label class="ctrl-label">Natija formati</label>
+        <select id="fmtSel">
+          <option value="plain">Oddiy matn</option>
+          <option value="structured">Tuzilmali (paragraflar)</option>
+          <option value="markdown">Markdown</option>
+        </select>
+      </div>
+      <div>
+        <label class="ctrl-label">&nbsp;</label>
+        <button class="run-btn" id="runBtn" disabled>
+          <svg viewBox="0 0 24 24" id="runIcon"><polygon points="5 3 19 12 5 21 5 3" stroke-linecap="round" stroke-linejoin="round" fill="white"/></svg>
+          Ishga tushir
+        </button>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <!-- Error -->
+    <div class="error-bar" id="errorBar">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span id="errorMsg"></span>
+    </div>
+
+    <!-- Preview + Result -->
+    <div class="panel" id="mainPanel">
+      <div class="divider" style="margin: 0 0 1.5rem; background: var(--border); height: 1px;"></div>
+      <div class="panel-row">
+        <div>
+          <div class="panel-title">
+            <span>Ko'rinish</span>
+          </div>
+          <div class="img-preview" id="imgPreview">
+            <div style="color: var(--text3); font-size: 12px;">Fayl ko'rinishi</div>
+          </div>
+        </div>
+        <div>
+          <div class="panel-title">
+            <span>Aniqlangan matn</span>
+          </div>
+          <div class="result-area">
+            <div class="result-placeholder" id="resultPlaceholder">Natija bu yerda chiqadi</div>
+            <textarea id="resultText" spellcheck="false" readonly></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action bar -->
+    <div class="action-bar" id="actionBar">
+      <span class="meta" id="metaInfo"></span>
+      <div class="action-btns">
+        <button id="copyBtn">
+          <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Nusxalash
+        </button>
+        <button class="download-btn" id="dlBtn">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          TXT yuklab olish
+        </button>
+      </div>
+    </div>
+
+  </div><!-- .card -->
+
+  <!-- Features -->
+  <div class="features">
+    <div class="feature">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      </div>
+      <h3>Yuqori aniqlik</h3>
+      <p>Claude AI modeli yordamida matngacha bo'lgan har bir belgi taniladi.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24"><path d="M4 5h16M4 10h16M4 15h10"/></svg>
+      </div>
+      <h3>Ko'p til</h3>
+      <p>O'zbek, Rus, Ingliz, Arab va boshqa 20+ tilda ishlaydi.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      </div>
+      <h3>PDF qo'llab-quvvatlash</h3>
+      <p>Rasm va PDF fayllardan bir xil sifatda matn olish.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <h3>Xavfsizlik</h3>
+      <p>Fayllar serverda saqlanmaydi, to'g'ridan-to'g'ri AI ga yuboriladi.</p>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  OCR Tizimi &mdash; Claude Sonnet AI · 2025 · Barcha huquqlar himoyalangan
+</footer>
+
+<script>
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const browsBtn = document.getElementById('browsBtn');
+const runBtn = document.getElementById('runBtn');
+const langSel = document.getElementById('langSel');
+const fmtSel = document.getElementById('fmtSel');
+const progressFill = document.getElementById('progressFill');
+const errorBar = document.getElementById('errorBar');
+const errorMsg = document.getElementById('errorMsg');
+const mainPanel = document.getElementById('mainPanel');
+const imgPreview = document.getElementById('imgPreview');
+const resultText = document.getElementById('resultText');
+const resultPlaceholder = document.getElementById('resultPlaceholder');
+const actionBar = document.getElementById('actionBar');
+const metaInfo = document.getElementById('metaInfo');
+const copyBtn = document.getElementById('copyBtn');
+const dlBtn = document.getElementById('dlBtn');
+const runIcon = document.getElementById('runIcon');
+
+let currentFile = null;
+
+function showError(msg) {
+  errorMsg.textContent = msg;
+  errorBar.style.display = 'flex';
+}
+function hideError() { errorBar.style.display = 'none'; }
+
+function formatBytes(b) {
+  return b < 1024*1024 ? (b/1024).toFixed(1)+' KB' : (b/(1024*1024)).toFixed(1)+' MB';
+}
+
+function handleFile(file) {
+  const ok = ['image/png','image/jpeg','image/webp','application/pdf'];
+  if (!ok.includes(file.type)) { showError('Faqat PNG, JPG, WEBP yoki PDF fayllar qabul qilinadi.'); return; }
+  if (file.size > 10*1024*1024) { showError('Fayl 10 MB dan oshmasligi kerak.'); return; }
+  hideError();
+  currentFile = file;
+  runBtn.disabled = false;
+  resultText.value = '';
+  resultPlaceholder.style.display = 'flex';
+  actionBar.style.display = 'none';
+  mainPanel.style.display = 'block';
+
+  imgPreview.innerHTML = '';
+  if (file.type.startsWith('image/')) {
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(file);
+    imgPreview.appendChild(img);
+  } else {
+    imgPreview.innerHTML = `<div class="pdf-icon-placeholder"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg><span>${file.name}</span><span style="color:var(--text3);font-size:11px">${formatBytes(file.size)}</span></div>`;
+  }
+}
+
+browsBtn.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('click', e => { if (e.target === dropZone || e.target.classList.contains('drop-title') || e.target.classList.contains('drop-sub')) fileInput.click(); });
+fileInput.addEventListener('change', e => { if (e.target.files[0]) handleFile(e.target.files[0]); });
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('over'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('over'); if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
+
+let progressInterval = null;
+
+function startProgress() {
+  let p = 0;
+  progressFill.style.width = '0%';
+  progressInterval = setInterval(() => {
+    p += Math.random() * 7;
+    if (p > 88) p = 88;
+    progressFill.style.width = p + '%';
+  }, 220);
+}
+function endProgress() {
+  clearInterval(progressInterval);
+  progressFill.style.width = '100%';
+  setTimeout(() => { progressFill.style.width = '0%'; }, 700);
+}
+
+async function toBase64(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result.split(',')[1]);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+runBtn.addEventListener('click', async () => {
+  if (!currentFile) return;
+  hideError();
+  runBtn.disabled = true;
+  runBtn.innerHTML = '<svg viewBox="0 0 24 24" class="spin" style="width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg> Ishlanmoqda...';
+  resultText.value = '';
+  resultPlaceholder.style.display = 'flex';
+  actionBar.style.display = 'none';
+  startProgress();
+
+  try {
+    const base64 = await toBase64(currentFile);
+    const isPdf = currentFile.type === 'application/pdf';
+    const lang = langSel.value;
+    const fmt = fmtSel.value;
+
+    const langHint = lang === 'auto' ? '' : ` Matn tili: ${langSel.options[langSel.selectedIndex].text}.`;
+    const fmtHint = fmt === 'markdown' ? ' Natijani Markdown formatida ber.' : fmt === 'structured' ? ' Matnni paragraflar va bo\'limlarga ajratib ber.' : '';
+
+    const prompt = `Bu ${isPdf ? 'PDF hujjat' : 'rasm'}dagi barcha matnni to'liq va aniq ko'chir. Hech qanday izoh, kirish so'z yoki tushuntirish qo'shma. Faqat fayldagi matnni aynan ko'chir.${langHint}${fmtHint}`;
+
+    const content = isPdf
+      ? [{ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64 } }, { type: 'text', text: prompt }]
+      : [{ type: 'image', source: { type: 'base64', media_type: currentFile.type, data: base64 } }, { type: 'text', text: prompt }];
+
+    const resp = await fetch('/api/ocr', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4096,
+        messages: [{ role: 'user', content }]
+      })
+    });
+
+    const data = await resp.json();
+    endProgress();
+
+    if (data.error) throw new Error(data.error.message);
+
+    const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
+    resultText.value = text;
+    resultPlaceholder.style.display = 'none';
+
+    metaInfo.textContent = `${text.length} belgi · ${text.split(/\s+/).filter(Boolean).length} so'z · ${currentFile.name}`;
+    actionBar.style.display = 'flex';
+
+  } catch (err) {
+    endProgress();
+    showError('Xato: ' + err.message);
+  }
+
+  runBtn.disabled = false;
+  runBtn.innerHTML = '<svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:white;fill:white;stroke-width:0"><polygon points="5 3 19 12 5 21 5 3"/></svg> Ishga tushir';
+});
+
+copyBtn.addEventListener('click', () => {
+  navigator.clipboard.writeText(resultText.value).then(() => {
+    copyBtn.innerHTML = '<svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2"><polyline points="20 6 9 17 4 12"/></svg> Nusxalandi!';
+    setTimeout(() => { copyBtn.innerHTML = '<svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Nusxalash'; }, 1800);
+  });
+});
+
+dlBtn.addEventListener('click', () => {
+  const blob = new Blob([resultText.value], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url;
+  a.download = (currentFile ? currentFile.name.replace(/\.[^.]+$/, '') : 'ocr') + '-natija.txt';
+  a.click(); URL.revokeObjectURL(url);
+});
+</script>
+</body>
+</html>
