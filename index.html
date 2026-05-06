@@ -694,22 +694,24 @@ runBtn.addEventListener('click', async () => {
 
     const prompt = `Bu ${isPdf ? 'hujjat' : 'rasm'}dagi barcha matnni to'liq va aniq ko'chir. Hech qanday izoh yoki tushuntirish qo'shma. Faqat matnni o'zini qaytar.${langHint}${fmtHint}`;
 
-    const content = [
-      { type: 'text', text: prompt },
-      { 
-        type: 'image_url', 
-        image_url: { 
-          url: `data:${currentFile.type};base64,${base64}` 
-        } 
-      }
-    ];
+    // Muqobil format: matn contentda, rasm images massivida
+    const message = {
+      role: 'user',
+      content: prompt
+    };
+
+    if (!isPdf) {
+      message.images = [base64];
+    } else {
+      throw new Error('Hozirda DeepSeek orqali faqat rasm formatlari (PNG, JPG, WEBP) qo\'llab-quvvatlanadi. PDF qo\'llab-quvvatlanmaydi.');
+    }
 
     const resp = await fetch('/api/ocr', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'deepseek-v4-flash',
-        messages: [{ role: 'user', content }]
+        messages: [message]
       })
     });
 
