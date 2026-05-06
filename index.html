@@ -430,14 +430,14 @@
     </span>
     OCR Tizimi
   </div>
-  <span class="nav-badge">v1.0 · Claude AI</span>
+  <span class="nav-badge">v1.1 · OCR</span>
 </nav>
 
 <main>
   <div class="hero">
-    <div class="hero-tag">Sun'iy intellekt asosida</div>
+    <div class="hero-tag">Yuqori aniqlikda</div>
     <h1>Rasmdan matn — bir zumda</h1>
-    <p>Istalgan rasm yoki PDF faylingizni yuklang. AI har qanday tildagi matnni aniq tanib beradi.</p>
+    <p>Istalgan rasm yoki PDF faylingizni yuklang. Tizim har qanday tildagi matnni aniq tanib beradi.</p>
 
     <div class="stats">
       <div class="stat"><div class="stat-val">20+</div><div class="stat-label">Til qo'llab-quvvatlanadi</div></div>
@@ -555,7 +555,7 @@
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
       </div>
       <h3>Yuqori aniqlik</h3>
-      <p>Claude AI modeli yordamida matngacha bo'lgan har bir belgi taniladi.</p>
+      <p>Zamonaviy modellar yordamida matngacha bo'lgan har bir belgi taniladi.</p>
     </div>
     <div class="feature">
       <div class="feature-icon">
@@ -576,14 +576,14 @@
         <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       </div>
       <h3>Xavfsizlik</h3>
-      <p>Fayllar serverda saqlanmaydi, to'g'ridan-to'g'ri AI ga yuboriladi.</p>
+      <p>Fayllar serverda saqlanmaydi, to'g'ridan-to'g'ri qayta ishlashga yuboriladi.</p>
     </div>
   </div>
 
 </main>
 
 <footer>
-  OCR Tizimi &mdash; Claude Sonnet AI · 2025 · Barcha huquqlar himoyalangan
+  OCR Tizimi · 2026 · Barcha huquqlar himoyalangan
 </footer>
 
 <script>
@@ -692,18 +692,23 @@ runBtn.addEventListener('click', async () => {
     const langHint = lang === 'auto' ? '' : ` Matn tili: ${langSel.options[langSel.selectedIndex].text}.`;
     const fmtHint = fmt === 'markdown' ? ' Natijani Markdown formatida ber.' : fmt === 'structured' ? ' Matnni paragraflar va bo\'limlarga ajratib ber.' : '';
 
-    const prompt = `Bu ${isPdf ? 'PDF hujjat' : 'rasm'}dagi barcha matnni to'liq va aniq ko'chir. Hech qanday izoh, kirish so'z yoki tushuntirish qo'shma. Faqat fayldagi matnni aynan ko'chir.${langHint}${fmtHint}`;
+    const prompt = `Bu ${isPdf ? 'hujjat' : 'rasm'}dagi barcha matnni to'liq va aniq ko'chir. Hech qanday izoh yoki tushuntirish qo'shma. Faqat matnni o'zini qaytar.${langHint}${fmtHint}`;
 
-    const content = isPdf
-      ? [{ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64 } }, { type: 'text', text: prompt }]
-      : [{ type: 'image', source: { type: 'base64', media_type: currentFile.type, data: base64 } }, { type: 'text', text: prompt }];
+    const content = [
+      { type: 'text', text: prompt },
+      { 
+        type: 'image_url', 
+        image_url: { 
+          url: `data:${currentFile.type};base64,${base64}` 
+        } 
+      }
+    ];
 
     const resp = await fetch('/api/ocr', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 4096,
+        model: 'deepseek-v4',
         messages: [{ role: 'user', content }]
       })
     });
@@ -711,9 +716,9 @@ runBtn.addEventListener('click', async () => {
     const data = await resp.json();
     endProgress();
 
-    if (data.error) throw new Error(data.error.message);
+    if (data.error) throw new Error(data.error.message || 'Xatolik yuz berdi');
 
-    const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
+    const text = data.choices[0].message.content;
     resultText.value = text;
     resultPlaceholder.style.display = 'none';
 
