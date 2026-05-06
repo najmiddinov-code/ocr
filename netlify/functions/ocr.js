@@ -16,11 +16,12 @@ exports.handler = async (event) => {
   }
 
   try {
-    const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
+    
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`,
       },
       body: event.body,
     });

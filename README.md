@@ -31,8 +31,8 @@ ocr-netlify/
 ### 3-qadam: API kalitni qo'shish (ENG MUHIM!)
 1. Netlify dashboard → Site settings → Environment variables
 2. "Add a variable" tugmasi:
-   - Key:   `DEEPSEEK_API_KEY`
-   - Value: `sk-...` (o'z kalitingiz)
+   - Key:   `GEMINI_API_KEY`
+   - Value: `AIzaSy...` (o'z kalitingiz)
 3. "Save" → Keyin "Deploys" → "Trigger deploy"
 
 ---
@@ -44,6 +44,7 @@ Netlify sizga bepul domen beradi:
 ---
 
 ## API kalitni qaerdan olish?
-1. https://api.deepseek.com ga kiring
-2. "API Keys" bo'limidan kalit yarating
-3. Kalitni nusxalab Netlify ga joylashtiring
+1. https://aistudio.google.com ga kiring (Google account bilan)
+2. "Get API key" → "Create API key in new project"
+3. Kalitni nusxalab Netlify ga joylashtiring.
+   *   **Gemini 1.5 Flash** modeli mutlaqo bepul (limit doirasida).

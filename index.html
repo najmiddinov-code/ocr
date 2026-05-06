@@ -694,25 +694,24 @@ runBtn.addEventListener('click', async () => {
 
     const prompt = `Bu ${isPdf ? 'hujjat' : 'rasm'}dagi barcha matnni to'liq va aniq ko'chir. Hech qanday izoh yoki tushuntirish qo'shma. Faqat matnni o'zini qaytar.${langHint}${fmtHint}`;
 
-    // Muqobil format: matn contentda, rasm images massivida
-    const message = {
-      role: 'user',
-      content: prompt
+    const payload = {
+      contents: [{
+        parts: [
+          { text: prompt },
+          {
+            inlineData: {
+              mimeType: currentFile.type,
+              data: base64
+            }
+          }
+        ]
+      }]
     };
-
-    if (!isPdf) {
-      message.images = [base64];
-    } else {
-      throw new Error('Hozirda DeepSeek orqali faqat rasm formatlari (PNG, JPG, WEBP) qo\'llab-quvvatlanadi. PDF qo\'llab-quvvatlanmaydi.');
-    }
 
     const resp = await fetch('/api/ocr', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'deepseek-v4-flash',
-        messages: [message]
-      })
+      body: JSON.stringify(payload)
     });
 
     const data = await resp.json();
@@ -720,7 +719,8 @@ runBtn.addEventListener('click', async () => {
 
     if (data.error) throw new Error(data.error.message || 'Xatolik yuz berdi');
 
-    const text = data.choices[0].message.content;
+    // Gemini response parsing
+    const text = data.candidates[0].content.parts[0].text;
     resultText.value = text;
     resultPlaceholder.style.display = 'none';
 
